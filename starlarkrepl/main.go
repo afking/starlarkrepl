@@ -14,8 +14,9 @@ func run() error {
 
 	thread := &starlark.Thread{Load: repl.MakeLoad()}
 	globals := make(starlark.StringDict)
+	options := starlarkrepl.Options{AutoComplete: true}
 
-	return starlarkrepl.Run(thread, globals)
+	return starlarkrepl.Run(thread, globals, options)
 }
 
 func main() {

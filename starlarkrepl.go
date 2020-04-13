@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -16,15 +17,36 @@ import (
 	"go.starlark.net/syntax"
 )
 
-func Run(thread *starlark.Thread, globals starlark.StringDict) (err error) {
+type Options struct {
+	_            struct{} // pragma: no unkeyed literals
+	HistoryFile  string   // Path to file for storing history
+	AutoComplete bool     // Experimental autocompletion
+}
+
+func Run(thread *starlark.Thread, globals starlark.StringDict, options Options) (err error) {
 	line := liner.NewLiner()
 	defer line.Close()
+
+	if options.HistoryFile != "" {
+		if f, err := os.Open(options.HistoryFile); err == nil {
+			line.ReadHistory(f)
+			f.Close()
+		}
+	}
 
 	line.SetCtrlCAborts(true)
 	resolve.LoadBindsGlobally = true // TODO
 
 	for err == nil {
-		err = rep(line, thread, globals)
+		err = rep(line, thread, globals, options)
+	}
+	if options.HistoryFile != "" {
+		f, err := os.Create(options.HistoryFile)
+		if err != nil {
+			return err
+		}
+		line.WriteHistory(f)
+		f.Close()
 	}
 	if err == io.EOF {
 		fmt.Println()
@@ -271,7 +293,7 @@ func suggest(line string) string {
 	return strings.Repeat(" ", noSpaces)
 }
 
-func rep(line *liner.State, thread *starlark.Thread, globals starlark.StringDict) error {
+func rep(line *liner.State, thread *starlark.Thread, globals starlark.StringDict, options Options) error {
 	ctx := context.Background()
 	thread.SetLocal("context", ctx)
 
@@ -295,8 +317,10 @@ func rep(line *liner.State, thread *starlark.Thread, globals starlark.StringDict
 		return []byte(s + "\n"), nil
 	}
 
-	c := completer{globals}
-	line.SetCompleter(c.complete)
+	if options.AutoComplete {
+		c := completer{globals}
+		line.SetCompleter(c.complete)
+	}
 
 	f, err := syntax.ParseCompoundStmt("<stdin>", readline)
 	if err != nil {
