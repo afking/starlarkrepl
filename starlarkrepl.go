@@ -314,6 +314,7 @@ func rep(line *liner.State, thread *starlark.Thread, globals starlark.StringDict
 		}
 		prompt = "... "
 		previous = s
+		line.AppendHistory(s)
 		return []byte(s + "\n"), nil
 	}
 
