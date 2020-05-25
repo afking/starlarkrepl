@@ -1,4 +1,4 @@
-module github.com/afking/starlarkrepl
+module github.com/emcfarlane/starlarkrepl
 
 go 1.14
 

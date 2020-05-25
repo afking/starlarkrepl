@@ -1,6 +1,6 @@
 # starlarkrepl
 
-[![GoDev](https://img.shields.io/static/v1?label=godev&message=reference&color=00add8)](https://pkg.go.dev/github.com/afking/starlarkrepl?tab=doc)
+[![GoDev](https://img.shields.io/static/v1?label=godev&message=reference&color=00add8)](https://pkg.go.dev/github.com/emcfarlane/starlarkrepl?tab=doc)
 
 Experimental autocompletion REPL for starlark-go based on [liner](https://github.com/peterh/liner).
 

@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/afking/starlarkrepl"
+	"github.com/emcfarlane/starlarkrepl"
 	"go.starlark.net/repl"
 	"go.starlark.net/starlark"
 )
